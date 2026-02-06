@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: ai-agent-agentscope
+
+  profiles:
+    active: development
+
+logging:
+  level:
+    com.brag.agentscope: DEBUG
+    io.agentscope: INFO
+    reactor.netty: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+agentscope:
+  model:
+    provider: dashscope
+    api-key: ${DASHSCOPE_API_KEY:}
+    model-name: qwen-plus
+    stream: true
+    enable-thinking: true
+    temperature: 0.7
+    max-tokens: 2000
+    thinking-budget: 1024
+
+  agent:
+    max-iters: 5
+    memory-type: in-memory
+    memory-max-length: 100
+
+  tools:
+    groups:
+      - name: basic_math
+        description: 基础数学运算
+        active: true
+      - name: advanced_math
+        description: 高级数学运算
+        active: false
+      - name: web_tools
+        description: 网络工具
+        active: false
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+
+logging:
+  level:
+    com.brag.agentscope: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+
+logging:
+  level:
+    com.brag.agentscope: INFO
+
+
+
