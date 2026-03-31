@@ -1,4 +1,4 @@
-module github.com/kevinten/eino-demos
+module github.com/kevinten-ai/eino-demos
 
 go 1.22.0
 

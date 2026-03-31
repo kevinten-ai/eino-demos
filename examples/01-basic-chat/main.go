@@ -12,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/cloudwego/eino/schema"
-	"github.com/kevinten/eino-demos/internal/config"
+	"github.com/kevinten-ai/eino-demos/internal/config"
 )
 
 func main() {

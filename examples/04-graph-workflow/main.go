@@ -24,7 +24,7 @@ import (
 	"github.com/cloudwego/eino/components/prompt"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
-	"github.com/kevinten/eino-demos/internal/config"
+	"github.com/kevinten-ai/eino-demos/internal/config"
 )
 
 func main() {

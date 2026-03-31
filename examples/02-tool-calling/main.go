@@ -16,7 +16,7 @@ import (
 
 	"github.com/cloudwego/eino/components/tool/utils"
 	"github.com/cloudwego/eino/schema"
-	"github.com/kevinten/eino-demos/internal/config"
+	"github.com/kevinten-ai/eino-demos/internal/config"
 )
 
 // ========== 方式一：用 InferTool 从 Go struct 自动推断 ==========
