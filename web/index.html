@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eino Agent Platform</title>
+  <style>
+    :root {
+      --primary: #00ADD8;
+      --bg: #0d1117;
+      --card: #161b22;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --border: #30363d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { margin: 0; font-size: 2rem; }
+    header p { color: var(--muted); margin: 0.5rem 0 0; }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { margin-top: 0; font-size: 1.25rem; color: #fff; }
+    label { display: block; margin: 0.75rem 0 0.25rem; font-size: 0.9rem; color: var(--muted); }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--primary);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      white-space: pre-wrap;
+      min-height: 40px;
+    }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .stream-box { max-height: 200px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Eino Agent Platform</h1>
+    <p>CloudWeGo Eino 框架学习项目 — 统一 API  playground</p>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <!-- Basic Chat -->
+      <div class="card">
+        <h2>01 基础对话</h2>
+        <label>消息内容</label>
+        <textarea id="chat-input" placeholder="你好，请介绍一下 Go 语言">你好，请用一句话介绍 Eino</textarea>
+        <button onclick="callBasicChat()">发送</button>
+        <div class="result" id="chat-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- Tool Calling -->
+      <div class="card">
+        <h2>02 工具调用</h2>
+        <label>问题</label>
+        <input id="tool-input" value="帮我计算 23 + 45" />
+        <button onclick="callTools()">调用</button>
+        <div class="result" id="tool-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- ReAct Agent -->
+      <div class="card">
+        <h2>03 ReAct Agent</h2>
+        <label>问题</label>
+        <input id="react-input" value="北京今天天气怎么样？" />
+        <button onclick="callReact()">运行</button>
+        <div class="result" id="react-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- Graph Workflow -->
+      <div class="card">
+        <h2>04 Graph 编排</h2>
+        <label>角色</label>
+        <input id="graph-role" value="诗人" />
+        <label>问题</label>
+        <input id="graph-input" value="描写秋天" />
+        <button onclick="callGraph()">生成</button>
+        <div class="result" id="graph-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- Stream -->
+      <div class="card">
+        <h2>05 流式输出</h2>
+        <label>问题</label>
+        <input id="stream-input" value="讲一个程序员和 AI 的小故事，3句话" />
+        <button onclick="callStream()">流式生成</button>
+        <div class="result stream-box" id="stream-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- Multi-Agent -->
+      <div class="card">
+        <h2>06 多 Agent 协作</h2>
+        <label>中文文本</label>
+        <textarea id="multi-input">云在青天水在瓶，心似莲花不染尘。</textarea>
+        <button onclick="callMultiAgent()">翻译+润色</button>
+        <div class="result" id="multi-result"><span class="muted">等待请求...</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:1rem">
+      <!-- RAG -->
+      <div class="card">
+        <h2>07 RAG 知识库</h2>
+        <label>上传文档</label>
+        <textarea id="rag-docs" placeholder="每行一个文档段落">Eino 是字节跳动 CloudWeGo 开源的 Go AI 框架，支持 Chain、Graph、Agent 编排。</textarea>
+        <button onclick="callRAGUpload()">上传文档</button>
+        <label>提问</label>
+        <input id="rag-query" value="Eino 支持哪些编排模式？" />
+        <button onclick="callRAGQuery()">问答</button>
+        <div class="result" id="rag-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- Memory -->
+      <div class="card">
+        <h2>08 对话记忆</h2>
+        <label>Session ID</label>
+        <input id="mem-session" value="session-001" />
+        <label>消息</label>
+        <input id="mem-input" value="我叫小明，我喜欢吃川菜。" />
+        <button onclick="callMemory()">发送</button>
+        <div class="result" id="mem-result"><span class="muted">等待请求...</span></div>
+      </div>
+
+      <!-- MCP -->
+      <div class="card">
+        <h2>09 MCP 工具发现</h2>
+        <label>MCP Server URL</label>
+        <input id="mcp-url" value="http://localhost:3001" />
+        <label>查询</label>
+        <input id="mcp-query" value="weather" />
+        <button onclick="callMCP()">发现工具</button>
+        <div class="result" id="mcp-result"><span class="muted">等待请求...</span></div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="card">
+      <h2>10 可观测性指标</h2>
+      <button onclick="callMetrics()">刷新指标</button>
+      <div class="result" id="metrics-result"><span class="muted">点击刷新...</span></div>
+    </div>
+  </div>
+
+  <script>
+    const API = path => `/api/v1${path}`;
+    async function post(path, body) {
+      const res = await fetch(API(path), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return await res.json();
+    }
+    async function get(path) {
+      const res = await fetch(API(path));
+      return await res.json();
+    }
+    function set(id, text) { document.getElementById(id).innerText = text; }
+
+    async function callBasicChat() {
+      const text = document.getElementById('chat-input').value;
+      set('chat-result', '请求中...');
+      const data = await post('/chat', { messages: [{ role: 'user', content: text }] });
+      set('chat-result', data.content || JSON.stringify(data, null, 2));
+    }
+    async function callTools() {
+      const text = document.getElementById('tool-input').value;
+      set('tool-result', '请求中...');
+      const data = await post('/tools', { question: text });
+      set('tool-result', (data.content || '') + '\n\n[ToolCalls]: ' + JSON.stringify(data.tool_calls || [], null, 2));
+    }
+    async function callReact() {
+      const text = document.getElementById('react-input').value;
+      set('react-result', '请求中...');
+      const data = await post('/react', { question: text });
+      set('react-result', data.content || JSON.stringify(data, null, 2));
+    }
+    async function callGraph() {
+      const role = document.getElementById('graph-role').value;
+      const text = document.getElementById('graph-input').value;
+      set('graph-result', '请求中...');
+      const data = await post('/graph', { role, question: text });
+      set('graph-result', data.content || JSON.stringify(data, null, 2));
+    }
+    async function callStream() {
+      const text = document.getElementById('stream-input').value;
+      const el = document.getElementById('stream-result');
+      el.innerText = '';
+      const res = await fetch(API('/stream'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: text })
+      });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split('\n')) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') break;
+            if (data.startsWith('[ERROR]')) el.innerText += '\nERR: ' + data;
+            else el.innerText += data;
+          }
+        }
+      }
+    }
+    async function callMultiAgent() {
+      const text = document.getElementById('multi-input').value;
+      set('multi-result', '请求中（可能需要 10-20 秒）...');
+      const data = await post('/multi-agent', { text });
+      set('multi-result', JSON.stringify(data.steps || data, null, 2));
+    }
+    async function callRAGUpload() {
+      const docs = document.getElementById('rag-docs').value.split('\n').filter(x => x.trim());
+      set('rag-result', '索引中...');
+      const data = await post('/rag/upload', { documents: docs });
+      set('rag-result', JSON.stringify(data, null, 2));
+    }
+    async function callRAGQuery() {
+      const text = document.getElementById('rag-query').value;
+      set('rag-result', '检索中...');
+      const data = await post('/rag/query', { question: text });
+      set('rag-result', data.answer || JSON.stringify(data, null, 2));
+    }
+    async function callMemory() {
+      const session = document.getElementById('mem-session').value;
+      const text = document.getElementById('mem-input').value;
+      set('mem-result', '请求中...');
+      const data = await post('/memory/chat', { session_id: session, message: text });
+      set('mem-result', data.content || JSON.stringify(data, null, 2));
+    }
+    async function callMCP() {
+      const url = document.getElementById('mcp-url').value;
+      const query = document.getElementById('mcp-query').value;
+      set('mcp-result', '发现中...');
+      const data = await post('/mcp/search', { server_url: url, query });
+      set('mcp-result', JSON.stringify(data, null, 2));
+    }
+    async function callMetrics() {
+      set('metrics-result', '刷新中...');
+      const data = await get('/metrics');
+      set('metrics-result', JSON.stringify(data, null, 2));
+    }
+  </script>
+</body>
+</html>
