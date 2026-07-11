@@ -50,3 +50,4 @@
 - `docker build -t eino-demos:local-check .`: 通过。
 - 容器 `GET /health`: HTTP 200，响应 `{"status":"ok"}`。
 - 无 Key 的 `POST /api/v1/rag/upload`: HTTP 500，并明确返回缺少 `DASHSCOPE_API_KEY`，未生成随机向量。
+- CloudBase deploy: 目标服务确认无误，但平台返回 `ResourceUnavailable.ResourceFrozen`；需在控制台自助解冻后重新部署。

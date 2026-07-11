@@ -43,6 +43,13 @@ The current image builds a static Go binary and exposes port `80` inside the con
 
 Confirm that this CloudBase environment is the intended deployment target before publishing.
 
+### 2026-07-11 release status
+
+- Target environment and service were confirmed through CloudBase CLI; `eino-demos` is a public container service.
+- Deployment was attempted with source `.` and port `80` after local container verification.
+- CloudBase rejected the release with `ResourceUnavailable.ResourceFrozen` because the environment was frozen after prolonged inactivity.
+- Restore the resource through the CloudBase console's self-service prompt, then rerun the deployment. CloudBase requires a new deployment after unfreezing; an old version cannot simply be resumed.
+
 ## Verification
 
 Before handoff:
