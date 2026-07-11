@@ -35,5 +35,6 @@ Thumbs.db
 
 # Local browser and QA output
 .playwright-mcp/
+.playwright-cli/
 playwright-report/
 test-results/
