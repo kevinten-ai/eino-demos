@@ -4,12 +4,14 @@
 *.dll
 *.so
 *.dylib
+server
 
 # Test binary
 *.test
 
 # Output of go coverage
 *.out
+coverage.out
 
 # Go workspace
 go.work
@@ -27,4 +29,11 @@ Thumbs.db
 
 # Environment
 .env
+.env.*
+!.env.example
 .env.local
+
+# Local browser and QA output
+.playwright-mcp/
+playwright-report/
+test-results/
