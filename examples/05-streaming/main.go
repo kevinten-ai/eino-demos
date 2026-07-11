@@ -26,7 +26,8 @@ func main() {
 	ctx := context.Background()
 	chatModel := config.MustNewChatModel(ctx)
 
-	fmt.Println("=== 流式输出 Demo ===\n")
+	fmt.Println("=== 流式输出 Demo ===")
+	fmt.Println()
 
 	// ========== 示例 1: 直接模型流式输出 ==========
 	fmt.Println("--- 示例 1: 模型直接 Stream ---")

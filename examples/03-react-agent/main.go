@@ -102,7 +102,8 @@ func main() {
 	}
 
 	fmt.Println("=== ReAct Agent Demo ===")
-	fmt.Println("Agent 会自动推理并调用工具来回答问题\n")
+	fmt.Println("Agent 会自动推理并调用工具来回答问题")
+	fmt.Println()
 
 	// 提一个需要多步推理的问题
 	messages := []*schema.Message{

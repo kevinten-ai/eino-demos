@@ -30,7 +30,8 @@ func main() {
 	callbacks.AppendGlobalHandlers(tracer)
 
 	fmt.Println("=== Observability Demo ===")
-	fmt.Println("所有 LLM 调用将被自动追踪并记录指标\n")
+	fmt.Println("所有 LLM 调用将被自动追踪并记录指标")
+	fmt.Println()
 
 	// 模拟多次调用
 	questions := []string{

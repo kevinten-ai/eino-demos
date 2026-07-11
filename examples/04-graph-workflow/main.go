@@ -11,8 +11,8 @@
 //   - Compile(): 编译图为可执行的 Runnable
 //
 // 本 Demo 演示两种模式：
-//   1. Chain（链式）：template → model（简单直线流程）
-//   2. Graph（图式）：带分支和合并的复杂流程
+//  1. Chain（链式）：template → model（简单直线流程）
+//  2. Graph（图式）：带分支和合并的复杂流程
 package main
 
 import (
@@ -31,7 +31,8 @@ func main() {
 	ctx := context.Background()
 	chatModel := config.MustNewChatModel(ctx)
 
-	fmt.Println("=== Graph 编排工作流 Demo ===\n")
+	fmt.Println("=== Graph 编排工作流 Demo ===")
+	fmt.Println()
 
 	// ========== 示例 1: Chain（线性链） ==========
 	fmt.Println("--- 示例 1: Chain 链式编排 ---")

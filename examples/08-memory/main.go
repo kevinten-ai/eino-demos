@@ -11,6 +11,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cloudwego/eino/components/model"
 	"github.com/cloudwego/eino/schema"
 	"github.com/kevinten-ai/eino-demos/internal/config"
 	"github.com/kevinten-ai/eino-demos/pkg/memory"
@@ -23,7 +24,8 @@ func main() {
 	sessionID := "user-001"
 
 	fmt.Println("=== Memory Demo ===")
-	fmt.Println("场景: 多轮对话，AI 能记住用户的名字和喜好\n")
+	fmt.Println("场景: 多轮对话，AI 能记住用户的名字和喜好")
+	fmt.Println()
 
 	// 第一轮
 	fmt.Println("[User] 你好，我叫小明，我喜欢吃川菜。")
@@ -48,9 +50,7 @@ func main() {
 	}
 }
 
-func chatWithMemory(ctx context.Context, chatModel interface {
-	Generate(ctx context.Context, input []*schema.Message, opts ...interface{}) (*schema.Message, error)
-}, store memory.ConversationStore, sessionID, userMsg string) *schema.Message {
+func chatWithMemory(ctx context.Context, chatModel model.ToolCallingChatModel, store memory.ConversationStore, sessionID, userMsg string) *schema.Message {
 	history := store.GetMessages(sessionID)
 	msgs := append(history, schema.UserMessage(userMsg))
 	resp, err := chatModel.Generate(ctx, msgs)

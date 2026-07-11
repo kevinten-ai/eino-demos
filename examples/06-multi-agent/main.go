@@ -9,8 +9,9 @@
 //   - adk.GetMessage(): 从事件中提取消息
 //
 // 场景: 翻译流水线
-//   Agent1（翻译员）→ Agent2（审校员）→ 最终结果
-//   翻译员先翻译，审校员再润色校对
+//
+//	Agent1（翻译员）→ Agent2（审校员）→ 最终结果
+//	翻译员先翻译，审校员再润色校对
 package main
 
 import (
@@ -27,7 +28,8 @@ func main() {
 	chatModel := config.MustNewChatModel(ctx)
 
 	fmt.Println("=== 多 Agent 协作 Demo ===")
-	fmt.Println("场景: 翻译流水线（翻译员 → 审校员）\n")
+	fmt.Println("场景: 翻译流水线（翻译员 → 审校员）")
+	fmt.Println()
 
 	// ========== 创建 Agent 1: 翻译员 ==========
 	translator, err := adk.NewChatModelAgent(ctx, &adk.ChatModelAgentConfig{
@@ -101,14 +103,14 @@ func main() {
 		}
 
 		// 从事件中提取消息
-		msg, agentName, err := adk.GetMessage(event)
+		msg, sourceEvent, err := adk.GetMessage(event)
 		if err != nil || msg == nil {
 			continue
 		}
 
 		// 只显示 assistant 角色的消息（跳过 user 角色的转发）
 		if msg.Role == schema.Assistant {
-			fmt.Printf("[%s] %s\n\n", agentName, msg.Content)
+			fmt.Printf("[%s] %s\n\n", sourceEvent.AgentName, msg.Content)
 		}
 	}
 }

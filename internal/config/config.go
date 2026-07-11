@@ -17,8 +17,8 @@ func MustNewChatModel(ctx context.Context) model.ToolCallingChatModel {
 		apiKey = os.Getenv("DASHSCOPE_API_KEY")
 	}
 	if apiKey == "" {
-		fmt.Println("请设置环境变量 OPENAI_API_KEY 或 DASHSCOPE_API_KEY")
-		os.Exit(1)
+		fmt.Println("警告: 未设置 OPENAI_API_KEY 或 DASHSCOPE_API_KEY，LLM 功能将不可用")
+		apiKey = "placeholder"
 	}
 
 	baseURL := os.Getenv("OPENAI_BASE_URL")

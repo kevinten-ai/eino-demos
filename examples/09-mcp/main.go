@@ -7,7 +7,8 @@
 //   - Tool Definition: MCP Server 暴露的工具元信息（名称、描述、参数 schema）
 //
 // 注意: 本 Demo 需要一个运行中的 MCP Server（HTTP 接口）才能实际调用。
-//       如果没有可用的 MCP Server，代码会展示发现和调用流程的完整逻辑。
+//
+//	如果没有可用的 MCP Server，代码会展示发现和调用流程的完整逻辑。
 package main
 
 import (
@@ -19,7 +20,8 @@ import (
 
 func main() {
 	fmt.Println("=== MCP Demo ===")
-	fmt.Println("MCP（Model Context Protocol）是连接 AI 与外部系统的标准协议\n")
+	fmt.Println("MCP（Model Context Protocol）是连接 AI 与外部系统的标准协议")
+	fmt.Println()
 
 	// 模拟一个 MCP Server 地址
 	// 实际使用时，需要启动一个支持 MCP over HTTP 的服务

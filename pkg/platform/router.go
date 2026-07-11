@@ -1,10 +1,10 @@
 package platform
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 
 	"github.com/cloudwego/eino/adk"
@@ -72,7 +72,7 @@ func (s *Server) handleTools(c *gin.Context) {
 		Result float64 `json:"result"`
 	}
 
-	calcTool, _ := utils.InferTool("calculate", "数学计算器", func(ctx interface{}, input *calcInput) (*calcOutput, error) {
+	calcTool, _ := utils.InferTool("calculate", "数学计算器", func(ctx context.Context, input *calcInput) (*calcOutput, error) {
 		return &calcOutput{Result: input.A + input.B}, nil
 	})
 	info, _ := calcTool.Info(c.Request.Context())
@@ -100,10 +100,14 @@ func (s *Server) handleTools(c *gin.Context) {
 
 // ========== 03 ReAct Agent ==========
 func (s *Server) handleReact(c *gin.Context) {
-	weatherTool, _ := utils.InferTool("get_weather", "查询天气", func(_ interface{}, input *struct {
+	weatherTool, _ := utils.InferTool("get_weather", "查询天气", func(_ context.Context, input *struct {
 		City string `json:"city" jsonschema:"description=城市,required"`
-	}) (*struct{ Weather string `json:"weather"` }, error) {
-		return &struct{ Weather string `json:"weather"` }{Weather: "晴天 25°C"}, nil
+	}) (*struct {
+		Weather string `json:"weather"`
+	}, error) {
+		return &struct {
+			Weather string `json:"weather"`
+		}{Weather: "晴天 25°C"}, nil
 	})
 	agent, err := react.NewAgent(c.Request.Context(), &react.AgentConfig{
 		ToolCallingModel: s.chatModel,
@@ -247,9 +251,9 @@ func (s *Server) handleMultiAgent(c *gin.Context) {
 			steps = append(steps, gin.H{"error": event.Err.Error()})
 			continue
 		}
-		msg, agentName, _ := adk.GetMessage(event)
+		msg, sourceEvent, _ := adk.GetMessage(event)
 		if msg != nil && msg.Role == schema.Assistant {
-			steps = append(steps, gin.H{"agent": agentName, "content": msg.Content})
+			steps = append(steps, gin.H{"agent": sourceEvent.AgentName, "content": msg.Content})
 		}
 	}
 	c.JSON(200, gin.H{"steps": steps})
@@ -342,8 +346,8 @@ func (s *Server) handleMCPSearch(c *gin.Context) {
 // ========== 10 Observability ==========
 func (s *Server) handleMetrics(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"stats":   s.metrics.Stats(),
-		"recent":  s.metrics.GetRecent(20),
+		"stats":  s.metrics.Stats(),
+		"recent": s.metrics.GetRecent(20),
 	})
 }
 

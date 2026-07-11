@@ -70,9 +70,9 @@ func (s *MetricsStore) Stats() map[string]any {
 		avgLatency = totalLatency / int64(s.total)
 	}
 	return map[string]any{
-		"total_calls":   s.total,
-		"error_calls":   s.errors,
-		"avg_latency_ms": avgLatency,
+		"total_calls":        s.total,
+		"error_calls":        s.errors,
+		"avg_latency_ms":     avgLatency,
 		"total_input_tokens":  totalInput,
 		"total_output_tokens": totalOutput,
 	}
@@ -95,27 +95,17 @@ func NewTracingCallback(store *MetricsStore) *TracingCallback {
 
 func (cb *TracingCallback) OnStart(ctx context.Context, info *callbacks.RunInfo, input callbacks.CallbackInput) context.Context {
 	cb.mu.Lock()
-	cb.startAt[info.RunID] = time.Now()
+	cb.startAt[info.Name] = time.Now()
 	cb.mu.Unlock()
 	return ctx
 }
 
 func (cb *TracingCallback) OnEnd(ctx context.Context, info *callbacks.RunInfo, output callbacks.CallbackOutput) context.Context {
-	cb.record(info, output, nil)
-	return ctx
-}
-
-func (cb *TracingCallback) OnError(ctx context.Context, info *callbacks.RunInfo, err error) context.Context {
-	cb.record(info, nil, err)
-	return ctx
-}
-
-func (cb *TracingCallback) record(info *callbacks.RunInfo, output callbacks.CallbackOutput, err error) {
 	cb.mu.RLock()
-	start, ok := cb.startAt[info.RunID]
+	start, ok := cb.startAt[info.Name]
 	cb.mu.RUnlock()
 	if !ok {
-		return
+		return ctx
 	}
 
 	call := LLMCall{
@@ -124,18 +114,39 @@ func (cb *TracingCallback) record(info *callbacks.RunInfo, output callbacks.Call
 		Model:     info.Name,
 	}
 
-	if input, ok := info.Input.(*schema.Message); ok && input != nil {
-		call.InputLen = len(input.Content)
+	cb.store.Record(call)
+	cb.mu.Lock()
+	delete(cb.startAt, info.Name)
+	cb.mu.Unlock()
+	return ctx
+}
+
+func (cb *TracingCallback) OnError(ctx context.Context, info *callbacks.RunInfo, err error) context.Context {
+	cb.mu.RLock()
+	start, ok := cb.startAt[info.Name]
+	cb.mu.RUnlock()
+	if !ok {
+		return ctx
 	}
-	if out, ok := output.(*schema.Message); ok && out != nil {
-		call.OutputLen = len(out.Content)
-	}
-	if err != nil {
-		call.Error = err.Error()
+
+	call := LLMCall{
+		Timestamp: time.Now(),
+		LatencyMs: time.Since(start).Milliseconds(),
+		Model:     info.Name,
+		Error:     err.Error(),
 	}
 
 	cb.store.Record(call)
 	cb.mu.Lock()
-	delete(cb.startAt, info.RunID)
+	delete(cb.startAt, info.Name)
 	cb.mu.Unlock()
+	return ctx
+}
+
+func (cb *TracingCallback) OnStartWithStreamInput(ctx context.Context, info *callbacks.RunInfo, input *schema.StreamReader[callbacks.CallbackInput]) context.Context {
+	return cb.OnStart(ctx, info, input)
+}
+
+func (cb *TracingCallback) OnEndWithStreamOutput(ctx context.Context, info *callbacks.RunInfo, output *schema.StreamReader[callbacks.CallbackOutput]) context.Context {
+	return cb.OnEnd(ctx, info, output)
 }

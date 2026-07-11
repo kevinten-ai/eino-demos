@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync/atomic"
 
 	"github.com/cloudwego/eino/components/embedding"
 	"github.com/cloudwego/eino/components/model"
@@ -18,6 +19,7 @@ type Engine struct {
 	embedder    embedding.Embedder
 	chatModel   model.ToolCallingChatModel
 	vectorStore *memory.InMemoryVectorStore
+	nextChunkID atomic.Uint64
 }
 
 func NewEngine(embedder embedding.Embedder, chatModel model.ToolCallingChatModel) *Engine {
@@ -40,7 +42,7 @@ func (e *Engine) AddDocuments(ctx context.Context, documents []string) error {
 			continue
 		}
 		e.vectorStore.Add(memory.VectorRecord{
-			ID:      fmt.Sprintf("chunk-%d", len(e.vectorStore.Search(vectors[0], 1))), // 简单 ID
+			ID:      fmt.Sprintf("chunk-%d", e.nextChunkID.Add(1)),
 			Content: chunk,
 			Vector:  vectors[0],
 		})

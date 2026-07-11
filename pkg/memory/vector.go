@@ -10,7 +10,7 @@ import (
 type VectorRecord struct {
 	ID      string
 	Content string
-	Vector  []float32
+	Vector  []float64
 }
 
 // InMemoryVectorStore 内存向量存储（基于余弦相似度）
@@ -31,9 +31,12 @@ func (s *InMemoryVectorStore) Add(record VectorRecord) {
 	s.records = append(s.records, record)
 }
 
-func (s *InMemoryVectorStore) Search(query []float32, topK int) []VectorRecord {
+func (s *InMemoryVectorStore) Search(query []float64, topK int) []VectorRecord {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	if topK <= 0 {
+		return []VectorRecord{}
+	}
 
 	type scoreRecord struct {
 		score float64
@@ -67,17 +70,15 @@ func (s *InMemoryVectorStore) Clear() {
 	s.records = s.records[:0]
 }
 
-func cosineSimilarity(a, b []float32) float64 {
+func cosineSimilarity(a, b []float64) float64 {
 	if len(a) != len(b) {
 		return 0
 	}
 	var dot, normA, normB float64
 	for i := 0; i < len(a); i++ {
-		av := float64(a[i])
-		bv := float64(b[i])
-		dot += av * bv
-		normA += av * av
-		normB += bv * bv
+		dot += a[i] * b[i]
+		normA += a[i] * a[i]
+		normB += b[i] * b[i]
 	}
 	if normA == 0 || normB == 0 {
 		return 0

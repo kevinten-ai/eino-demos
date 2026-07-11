@@ -1,6 +1,6 @@
 # Eino Agent Platform
 
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev/)
+[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?logo=go&logoColor=white)](https://go.dev/)
 [![Eino](https://img.shields.io/badge/Eino-CloudWeGo-blue)](https://github.com/cloudwego/eino)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -53,7 +53,7 @@ Web Platform      统一 REST API + Playground UI
 
 ### 环境要求
 
-- Go 1.22+
+- Go 1.23+
 - LLM API Key（OpenAI / DashScope / 任意 OpenAI 兼容 API）
 
 ### 配置环境变量

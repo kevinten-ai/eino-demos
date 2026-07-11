@@ -1,7 +1,6 @@
 package memory
 
 import (
-	"context"
 	"sync"
 
 	"github.com/cloudwego/eino/schema"
@@ -29,7 +28,9 @@ func NewInMemoryConversationStore() ConversationStore {
 func (s *InMemoryConversationStore) AddMessages(sessionID string, msgs []*schema.Message) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.sessions[sessionID] = append(s.sessions[sessionID], msgs...)
+	for _, msg := range msgs {
+		s.sessions[sessionID] = append(s.sessions[sessionID], cloneMessage(msg))
+	}
 }
 
 func (s *InMemoryConversationStore) GetMessages(sessionID string) []*schema.Message {
@@ -40,11 +41,19 @@ func (s *InMemoryConversationStore) GetMessages(sessionID string) []*schema.Mess
 	if orig == nil {
 		return nil
 	}
-	copyMsgs := make([]*schema.Message, len(orig))
-	for i, m := range orig {
-		copyMsgs[i] = m
+	copyMsgs := make([]*schema.Message, 0, len(orig))
+	for _, m := range orig {
+		copyMsgs = append(copyMsgs, cloneMessage(m))
 	}
 	return copyMsgs
+}
+
+func cloneMessage(message *schema.Message) *schema.Message {
+	if message == nil {
+		return nil
+	}
+	cloned := *message
+	return &cloned
 }
 
 func (s *InMemoryConversationStore) Clear(sessionID string) {
