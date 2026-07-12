@@ -50,6 +50,7 @@ Confirm that this CloudBase environment is the intended deployment target before
 - Deployment `005` is normal, serves 100% of traffic, and has one active instance.
 - Production URL: `https://eino-demos-223854-8-1255322707.sh.run.tcloudbase.com/`
 - The production homepage and `/health` endpoint both return HTTP 200; `/health` returns `{"status":"ok"}`.
+- The service uses a zero-minimum autoscaling policy. A cold request can briefly return HTTP 503 while the first instance starts; the 2026-07-12 browser recheck recovered to HTTP 200 in about 30 seconds.
 
 ## Verification
 
